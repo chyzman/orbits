@@ -1,79 +1,107 @@
 import pygame
+import sys
 import math
 import random
 
+
 pygame.init()
+
 
 font = pygame.font.SysFont('Fira Code', 30)
 
+
 screen = pygame.display.set_mode((0, 0))
 size = w, h = screen.get_width(), screen.get_height()
+background = pygame.Surface(pygame.Rect(0, 0, w, h).size)
+
 pygame.display.set_caption("Orbit Simulator")
-
-
-class Planet(pygame.sprite.Sprite):
-
-    def __init__(self, x, y, vx, vy, r, g, b, s):
-        super().__init__()
-
-        self.vx = vx
-        self.vy = vy
-        self.color = (r, g, b)
-        self.size = s
-
-        self.image = pygame.Surface([s**2, s**2])
-        self.image.set_colorkey((255, 255, 255))
-
-        pygame.draw.circle(self.image, self.color, (self.size // 2, self.size // 2), 5)
-
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-    def update(self):
-        d = math.sqrt((h / 2 - self.rect.y) ** 2 + (w / 2 - self.rect.x) ** 2)
-
-        self.vx -= (g * (self.rect.x - w / 2) / d ** 3)
-        self.vy -= (g * (self.rect.y - h / 2) / d ** 3)
-
-        self.rect.x += self.vx
-        self.rect.y += self.vy
-
-
-Planets = pygame.sprite.Group()
-
-for i in range(10):
-    planet = Planet(w / 2 - random.randint(-300, 300), h / 2 - random.randint(-400, 400), random.randint(-10, 10) / 10,
-                    random.randint(-10, 10) / 10, random.randint(0, 255), random.randint(0, 255),
-                    random.randint(0, 255), random.randint(3, 5))
-    Planets.add(planet)
-
-t = 0
 g = 500
 
-running = True
+planets = []
+
+for i in range(100):
+    ang = random.uniform(math.radians(0), math.radians(360))
+    dist = random.uniform(100, 300)
+
+    speed_angle = random.uniform(math.radians(0), math.radians(360))
+    speed = random.uniform(0, 1)
+
+    planets.append([[w / 2 - math.cos(ang) * dist, h / 2 - math.sin(ang) * dist],
+                    [math.cos(speed_angle) * speed, math.sin(speed_angle) * speed],
+                    [random.randint(0, 255),
+                     random.randint(0, 255),
+                     random.randint(0, 255)],
+                    random.uniform(3, 5)])
+
+t = 0
+
+Running = True
+Paused = False
+Debug = False
 clock = pygame.time.Clock()
 
-while running:
+background.fill((0, 0, 0))
+
+while Running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            Running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                running = False
+                Running = False
+            if event.key == pygame.K_SPACE:
+                Paused = not Paused
+            if event.key == pygame.K_F3:
+                Debug = not Debug
+    if not Paused:
+        screen.blit(background, (0, 0))
 
-    screen.fill((50, 50, 75))
-    pygame.draw.circle(screen, (255, 255, 0), (w / 2, h / 2), 10)
-    Planets.update()
-    Planets.draw(screen)
+        for index, i in enumerate(planets):
+            sundist = math.sqrt((h / 2 - i[0][1]) ** 2 + (w / 2 - i[0][0]) ** 2)
 
-    time = font.render("Time: " + str(t), True, (255, 128, 0))
-    textRect3 = time.get_rect()
-    textRect3.topright = (w - 10, 10)
-    screen.blit(time, textRect3)
+            tempx = i[0][0]
+            tempy = i[0][1]
 
-    pygame.display.flip()
+            if sundist < 10:
+                planets.pop(index)
+            else:
+                i[1][0] -= (g * (i[0][0] - w / 2) / sundist ** 3)
+                i[1][1] -= (g * (i[0][1] - h / 2) / sundist ** 3)
 
-    clock.tick(120)
+                for s in planets:
+                    dr = math.sqrt((s[0][1] - i[0][1]) ** 2 + (s[0][0] - i[0][0]) ** 2)
 
-    t += 1
+                    if dr > 0:
+                        i[1][0] -= (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
+                        i[1][1] -= (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
+
+            i[0][0] += i[1][0]
+            i[0][1] += i[1][1]
+
+            pygame.draw.circle(screen, i[2], (i[0][0], i[0][1]), i[3])
+
+            pygame.draw.aaline(background, i[2], (tempx, tempy), (i[0][0], i[0][1]))
+
+        pygame.draw.circle(screen, (255, 255, 0), (w / 2, h / 2), 10)
+
+        if Debug:
+            timetext = font.render(f"Time: {str(t)}", True, (255, 255, 255))
+            textrect = timetext.get_rect()
+            textrect.topright = (w - 10, 10)
+            screen.blit(timetext, textrect)
+
+            planettext = font.render(f"Planets: {len(planets)}", True, (255, 255, 255))
+            textrect = planettext.get_rect()
+            textrect.topright = (w - 10, 30)
+            screen.blit(planettext, textrect)
+
+            fpstext = font.render(f"Fps: {round(clock.get_fps())}", True, (255, 255, 255))
+            textrect = fpstext.get_rect()
+            textrect.topright = (w - 10, 50)
+            screen.blit(fpstext, textrect)
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        t += 1
