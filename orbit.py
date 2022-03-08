@@ -7,7 +7,7 @@ import random
 pygame.init()
 
 font = pygame.font.SysFont('Fira Code', 30)
-screen = pygame.display.set_mode((0, 0))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 size = w, h = screen.get_width(), screen.get_height()
 background = pygame.Surface(pygame.Rect(0, 0, w, h).size)
 pygame.display.set_caption("Orbit Simulator")
