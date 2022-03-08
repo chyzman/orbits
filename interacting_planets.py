@@ -20,12 +20,12 @@ pygame.display.set_caption("Orbit Simulator")
 print(screen.get_size())
 
 # s = h / 2
-g = 100
+g = 0
 # red boi is [[w / 2 + 0, h / 2 + -180], [1, 0], [255, 0, 0], 0]
 
 planets = []
 
-for i in range(20):
+for i in range(100):
     ang = random.uniform(math.radians(0), math.radians(360))
     dist = random.uniform(100, 300)
 
@@ -39,6 +39,8 @@ for i in range(20):
                     random.uniform(-10, 10)])
 
 t = 0
+clock = pygame.time.Clock()
+
 
 while 1:
 
@@ -65,9 +67,13 @@ while 1:
 
         for s in planets:
             dr = math.sqrt((s[0][1] - i[0][1]) ** 2 + (s[0][0] - i[0][0]) ** 2)
-            if dr > 50:
+            if dr > 50 and i[3] > 0:
                 i[1][0] -= (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
                 i[1][1] -= (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
+
+            if dr > 50 and i[3] < 0:
+                i[1][0] += (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
+                i[1][1] += (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
 
         i[0][0] += i[1][0]
         i[0][1] += i[1][1]
@@ -98,13 +104,21 @@ while 1:
             textRect2 = text2.get_rect()
             textRect2.topleft = (10, 32 + a * screen.get_height() / (screen.get_height() // 55))
             screen.blit(text2, textRect2)
+
             a += 1
-    pygame.draw.circle(screen, (255, 255, 0), (w / 2, h / 2), 20)
+    #pygame.draw.circle(screen, (255, 255, 0), (w / 2, h / 2), 20)
 
     text3 = font.render("Time: " + str(t), True, (255, 128, 0))
     textRect3 = text3.get_rect()
     textRect3.topright = (w - 10, 10)
     screen.blit(text3, textRect3)
+
+    text4 = font.render(f"Fps: {round(clock.get_fps())}", True, (255 - int(clock.get_fps() * 4), int(clock.get_fps() * 4), 0))
+    textRect4 = text4.get_rect()
+    textRect4.topright = (w - 10, 50)
+    screen.blit(text4, textRect4)
+
+    clock.tick(60)
 
     pygame.display.flip()
     t += 1
