@@ -25,9 +25,9 @@ g = 0
 
 planets = []
 
-for i in range(100):
+for i in range(200):
     ang = random.uniform(math.radians(0), math.radians(360))
-    dist = random.uniform(100, 300)
+    dist = random.uniform(300, 300)
 
     speed_angle = random.uniform(math.radians(0), math.radians(360))
     #speed_angle = math.pi / 2 + ang
@@ -36,7 +36,7 @@ for i in range(100):
     planets.append([[w / 2 - math.cos(ang) * dist, h / 2 - math.sin(ang) * dist],
                     [math.cos(speed_angle) * speed, math.sin(speed_angle) * speed],
                     [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)],
-                    random.uniform(-10, 10)])
+                    random.uniform(-0, 10)])
 
 t = 0
 clock = pygame.time.Clock()
@@ -67,13 +67,16 @@ while 1:
 
         for s in planets:
             dr = math.sqrt((s[0][1] - i[0][1]) ** 2 + (s[0][0] - i[0][0]) ** 2)
-            if dr > 50 and i[3] > 0:
+            if dr > (5 * abs(s[3]) + 5) and i[3] > 0:
                 i[1][0] -= (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
                 i[1][1] -= (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
 
-            if dr > 50 and i[3] < 0:
+            if dr > (5 * abs(s[3]) + 5) and i[3] < 0:
                 i[1][0] += (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
                 i[1][1] += (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
+
+        i[1][0] /= 1.01
+        i[1][1] /= 1.01
 
         i[0][0] += i[1][0]
         i[0][1] += i[1][1]
@@ -115,8 +118,13 @@ while 1:
 
     text4 = font.render(f"Fps: {round(clock.get_fps())}", True, (255 - int(clock.get_fps() * 4), int(clock.get_fps() * 4), 0))
     textRect4 = text4.get_rect()
-    textRect4.topright = (w - 10, 50)
+    textRect4.topright = (w - 10, 30)
     screen.blit(text4, textRect4)
+
+    text5 = font.render("Planets: " + str(len(planets)), True, (0, 255, 255))
+    textRect5 = text5.get_rect()
+    textRect5.topright = (w - 10, 50)
+    screen.blit(text5, textRect5)
 
     clock.tick(60)
 
