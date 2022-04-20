@@ -25,7 +25,7 @@ g = 0
 
 planets = []
 
-for i in range(200):
+for i in range(100):
     ang = random.uniform(math.radians(0), math.radians(360))
     dist = random.uniform(300, 300)
 
@@ -36,7 +36,7 @@ for i in range(200):
     planets.append([[w / 2 - math.cos(ang) * dist, h / 2 - math.sin(ang) * dist],
                     [math.cos(speed_angle) * speed, math.sin(speed_angle) * speed],
                     [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)],
-                    random.uniform(-0, 10)])
+                    random.uniform(-100, 100)])
 
 t = 0
 clock = pygame.time.Clock()
@@ -80,10 +80,12 @@ while 1:
 
         i[0][0] += i[1][0]
         i[0][1] += i[1][1]
+
         #                              color, position, size
         #pygame.draw.circle(screen, i[2], (i[0][0], i[0][1]), abs(i[3]) + 2)
 
-        pygame.draw.circle(screen, (255 - 12.75 * (i[3] + 10), 0, 12.75 * (i[3] + 10)), (i[0][0], i[0][1]), 10)
+        #pygame.draw.circle(screen, [255 - 12.75 * (i[3] + 10), 0, 12.75 * (i[3] + 10)], (i[0][0], i[0][1]), 10)
+        pygame.draw.circle(screen, [255 - 1.275 * (i[3] + 100), 0, 1.275 * (i[3] + 100)], (i[0][0], i[0][1]), 10)
 
         if a * 55 < screen.get_height():
             # text = font.render("Mass: (" + str(i[5]) + ")", True, i[2])
