@@ -71,12 +71,22 @@ while Running:
                 Debug = not Debug
             if event.key == pygame.K_c:
                 background.fill((50, 50, 50))
+                for i in range(int(uniw / w)):
+                    pygame.draw.line(background, (0, 0, 0), (w * i, 0), (w * i, unih))
+                for i in range(int(unih / h)):
+                    pygame.draw.line(background, (0, 0, 0), (0, h * i), (uniw, h * i))
+            if event.key == pygame.K_g:
+                offset = [0, 0]
             if event.key == pygame.K_x:
                 planets.clear()
                 spawnsun()
             if event.key == pygame.K_r:
                 planets.clear()
                 background.fill((50, 50, 50))
+                for i in range(int(uniw / w)):
+                    pygame.draw.line(background, (0, 0, 0), (w * i, 0), (w * i, unih))
+                for i in range(int(unih / h)):
+                    pygame.draw.line(background, (0, 0, 0), (0, h * i), (uniw, h * i))
                 spawnsun()
                 start()
             if event.key == pygame.K_t:
