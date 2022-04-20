@@ -2,7 +2,9 @@ import pygame
 import sys
 import math
 import random
-
+import os
+import tkinter as tk
+from tkinter import *
 
 pygame.init()
 
@@ -13,8 +15,10 @@ background = pygame.Surface(pygame.Rect(0, 0, w, h).size)
 pygame.display.set_caption("Orbit Simulator")
 
 planets = []
+
 def spawnsun():
     planets.append([[w / 2, h / 2], [0, 0], (255, 255, 0), 100, 20, True])
+
 
 def start():
     for i in range(30):
@@ -33,7 +37,7 @@ def start():
 
 t = 0
 spawnsun()
-#start()
+# start()
 Running = True
 Paused = False
 Debug = True
@@ -71,7 +75,7 @@ while Running:
             if event.key == pygame.K_t:
                 start()
             if event.key == pygame.K_TAB:
-                if choice < len(spawnvars)-1:
+                if choice < len(spawnvars) - 1:
                     choice += 1
                 else:
                     choice = 0
@@ -96,7 +100,7 @@ while Running:
                 xdist = 0.001 + pygame.mouse.get_pos()[0] - firstx
                 ydist = 0.001 + pygame.mouse.get_pos()[1] - firsty
                 angle = math.atan2(ydist, xdist)
-                speed = math.sqrt(xdist**2+ydist**2)/250
+                speed = math.sqrt(xdist ** 2 + ydist ** 2) / 250
                 planets.append([[firstx, firsty],
                                 [math.cos(angle) * speed, math.sin(angle) * speed],
                                 [random.randint(0, 255),
@@ -105,14 +109,16 @@ while Running:
                                 spawnvars[0], spawnvars[1], False])
             if event.button == pygame.BUTTON_RIGHT:
                 for index, i in enumerate(planets):
-                    if math.sqrt((pygame.mouse.get_pos()[1] - i[0][1]) ** 2 + (pygame.mouse.get_pos()[0] - i[0][0]) ** 2) < i[4]:
+                    if math.sqrt(
+                            (pygame.mouse.get_pos()[1] - i[0][1]) ** 2 + (pygame.mouse.get_pos()[0] - i[0][0]) ** 2) < \
+                            i[4]:
                         planets.pop(index)
     screen.blit(background, (0, 0))
 
     for index, i in enumerate(planets):
         if not Paused:
 
-            if math.sqrt((h/2 - i[0][1]) ** 2 + (w/2 - i[0][0]) ** 2) > 20000:
+            if math.sqrt((h / 2 - i[0][1]) ** 2 + (w / 2 - i[0][0]) ** 2) > 20000:
                 planets.pop(index)
 
             tempx = i[0][0]
@@ -121,7 +127,7 @@ while Running:
             for s in planets:
                 dr = math.sqrt((s[0][1] - i[0][1]) ** 2 + (s[0][0] - i[0][0]) ** 2)
 
-                if not i[5] and dr > 0:
+                if dr > (i[5] + s[5]) * 2 and not i[5]:
                     if i[3] < 0:
                         i[1][0] += (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
                         i[1][1] += (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
@@ -143,7 +149,8 @@ while Running:
             pygame.draw.aaline(background, i[2], (tempx, tempy), (i[0][0], i[0][1]))
 
     if pygame.mouse.get_pressed()[0]:
-        pygame.draw.aaline(screen, (255, 255, 255), (firstx, firsty), (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]))
+        pygame.draw.aaline(screen, (255, 255, 255), (firstx, firsty),
+                           (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]))
 
     if Debug:
         timetext = font.render(f"Time: {str(t)}", True, (255, 255, 255))
@@ -156,7 +163,7 @@ while Running:
         textrect.topright = (w - 10, 30)
         screen.blit(planettext, textrect)
 
-        fpstext = font.render(f"Fps: {round(clock.get_fps())}", True, (255, 255, 255))
+        fpstext = font.render(f"Fps: {round(clock.get_fps(), 3)}", True, (255, 255, 255))
         textrect = fpstext.get_rect()
         textrect.topright = (w - 10, 50)
         screen.blit(fpstext, textrect)
