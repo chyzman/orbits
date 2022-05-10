@@ -25,12 +25,12 @@ def spawnsun():
 
 
 def start():
-    for i in range(30):
+    for i in range(1000):
         ang = random.uniform(math.radians(0), math.radians(360))
         dist = random.uniform(100, 300)
 
         speed_angle = random.uniform(math.radians(0), math.radians(360))
-        speed = random.uniform(0, 0.1)
+        speed = random.uniform(0, 3)
         mass = random.uniform(5, 10)
         planets.append([[w / 2 - math.cos(ang) * dist, h / 2 - math.sin(ang) * dist],
                         [math.cos(speed_angle) * speed, math.sin(speed_angle) * speed],
@@ -161,19 +161,20 @@ while Running:
             tempx = i[0][0]
             tempy = i[0][1]
 
-            for s in planets:
-                dr = math.sqrt((s[0][1] - i[0][1]) ** 2 + (s[0][0] - i[0][0]) ** 2)
+            dr = math.sqrt((planets[0][0][1] - i[0][1]) ** 2 + (planets[0][0][0] - i[0][0]) ** 2)
 
-                if dr > (i[5] + s[5]) * 2 and not i[5]:
-                    if i[3] < 0:
-                        i[1][0] += (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
-                        i[1][1] += (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
-                    if i[3] > 0:
-                        i[1][0] -= (s[3] * (i[0][0] - s[0][0]) / dr ** 3)
-                        i[1][1] -= (s[3] * (i[0][1] - s[0][1]) / dr ** 3)
+            if dr > (i[5] + planets[0][5]) * 2 and not i[5]:
+                if i[3] < 0:
+                    i[1][0] += (planets[0][3] * (i[0][0] - planets[0][0][0]) / dr ** 3)
+                    i[1][1] += (planets[0][3] * (i[0][1] - planets[0][0][1]) / dr ** 3)
+                if i[3] > 0:
+                    i[1][0] -= (planets[0][3] * (i[0][0] - planets[0][0][0]) / dr ** 3)
+                    i[1][1] -= (planets[0][3] * (i[0][1] - planets[0][0][1]) / dr ** 3)
 
                 i[0][0] += i[1][0]
                 i[0][1] += i[1][1]
+            elif index != 0:
+                planets.pop(index)
 
         if i[3] < 0:
             pygame.draw.circle(screen, i[2], (i[0][0] + offset[0], i[0][1] + offset[1]), abs(i[4]))
@@ -184,6 +185,11 @@ while Running:
 
         if not Paused:
             pygame.draw.aaline(background, i[2], ((tempx + uniw/2 - w/2), (tempy + unih/2 - h/2)), ((i[0][0] + uniw/2 - w/2), (i[0][1] + unih/2 - h/2)))
+
+    for i in range(int(uniw / w)):
+        pygame.draw.line(background, (0, 0, 0), (w * i, 0), (w * i, unih))
+    for i in range(int(unih / h)):
+        pygame.draw.line(background, (0, 0, 0), (0, h * i), (uniw, h * i))
 
     if pygame.mouse.get_pressed()[0]:
         pygame.draw.aaline(screen, (255, 255, 255), (firstx + offset[0], firsty + offset[1]), (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]))
